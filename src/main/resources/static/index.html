@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="referrer" content="no-referrer">
+    <title>Games Meeting | Gestor de biblioteca gamer</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div id="auth-screen">
+    <div class="login-card">
+        <img src="media/logo.png" alt="Logo" class="login-logo-img">
+        <h2 id="auth-title" style="color: var(--sidebar); margin-top: 0;">Iniciar sesión</h2>
+
+        <input type="text" id="auth-name" class="login-input" placeholder="Tu nombre" style="display:none;">
+        <input type="email" id="auth-email" class="login-input" placeholder="Correo electrónico">
+        <input type="password" id="auth-pass" class="login-input" placeholder="Contraseña">
+
+        <button id="btn-auth" class="btn-login" onclick="login()">ENTRAR</button>
+        <p id="auth-error" style="color: red; font-size: 0.9rem; margin-top: 10px;"></p>
+        <div class="toggle-link" id="toggle-auth" onclick="toggleAuth()">¿No tienes cuenta? Regístrate aquí</div>
+    </div>
+</div>
+
+<div id="app-screen">
+    <div class="app-container">
+        <div class="sidebar">
+            <div class="logo">
+                <img src="media/logo.png" style="width: 50px;" alt="Icon">
+                <div class="logo-text">Games Meeting</div>
+            </div>
+            <div class="menu-item active" onclick="cargarJuegos()"><span class="icon">📚</span> <span class="text">Mi biblioteca</span></div>
+            <div class="menu-item" onclick="abrirFiltros()"><span class="icon">🔍</span> <span class="text">Filtrar...</span></div>
+            <div class="menu-item" onclick="abrirModal()"><span class="icon">➕</span> <span class="text">Añadir juego</span></div>
+            <div class="menu-item" onclick="logout()" style="margin-top: auto;"><span class="icon">🚪</span> <span class="text">Cerrar sesión</span></div>
+            <div class="footer-info">&copy; 2026 Adrián Mansilla <br>Proyecto Intermodular</div>
+        </div>
+
+        <div class="main-content">
+            <div class="header">
+                <h1>Mi colección gamer</h1>
+                <div class="header-right">
+                    <span id="user-name-display" style="margin-right: 15px; color: var(--sidebar); font-weight: bold;"></span>
+                </div>
+            </div>
+            <div id="games-grid" class="games-grid"></div>
+        </div>
+    </div>
+</div>
+
+<div id="modal-form" class="modal-overlay">
+    <div class="modal">
+        <h2>Gestionar juego</h2>
+        <input type="hidden" id="id-juego">
+        <div class="form-grid">
+            <div class="form-group"><label>Título</label><input type="text" id="titulo"></div>
+            <div class="form-group"><label>Año</label><input type="number" id="anio"></div>
+            <div class="form-group"><label>Género</label><select id="genero"></select></div>
+            <div class="form-group"><label>Estado</label><select id="estado"><option>Pendiente</option><option>Jugando</option><option>Completado</option></select></div>
+            <div class="form-group"><label>Formato</label><select id="formato" onchange="actualizarPlats()"><option>Físico</option><option>Digital</option></select></div>
+            <div class="form-group"><label>Plataforma</label><select id="plataforma"></select></div>
+            <div class="form-group form-full"><label>Carátula (URL)</label><input type="text" id="caratula"></div>
+            <div class="form-group form-full"><label>Descripción</label><textarea id="descripcion"></textarea></div>
+        </div>
+        <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px;">
+            <button class="btn-cancel" onclick="cerrarModal('modal-form')">Cancelar</button>
+            <button class="btn-primary" onclick="guardarJuego()">Guardar</button>
+        </div>
+    </div>
+</div>
+
+<div id="modal-delete" class="modal-overlay">
+    <div class="modal" style="text-align:center; max-width:400px;">
+        <h2 style="color: var(--delete)">Eliminar</h2>
+        <p>¿Seguro? No habrá vuelta atrás.</p>
+        <input type="hidden" id="id-borrar">
+        <div style="display:flex; justify-content:center; gap:10px;">
+            <button class="btn-cancel" onclick="cerrarModal('modal-delete')">Cancelar</button>
+            <button class="btn-primary" style="background:var(--delete)" onclick="confirmarBorrado()">Eliminar</button>
+        </div>
+    </div>
+</div>
+
+<div id="modal-filtros" class="modal-overlay">
+    <div class="modal" style="max-width:350px;">
+        <h2>Filtrar</h2>
+        <div class="form-group"><label>Nombre</label><input type="text" id="filtro-txt" onkeyup="aplicarFiltros()"></div>
+        <div class="form-group"><label>Género</label><select id="filtro-gen" onchange="aplicarFiltros()"><option value="">Todos</option></select></div>
+        <div class="form-group"><label>Plataforma</label><select id="filtro-plat" onchange="aplicarFiltros()"><option value="">Todas</option></select></div>
+        <div class="form-group"><label>Estado</label><select id="filtro-est" onchange="aplicarFiltros()"><option value="">Todos</option><option>Pendiente</option><option>Jugando</option><option>Completado</option></select></div>
+        <button class="btn-primary" style="width:100%; margin-top:20px;" onclick="cerrarModal('modal-filtros')">Cerrar</button>
+    </div>
+</div>
+
+<script>
+    const API = "http://localhost:8080/api";
+    let usuario = null;
+    let juegos = [];
+    let isRegister = false;
+
+    // DATOS
+    const generos = ["Acción", "Aventura", "RPG", "Estrategia", "Deportes", "Plataformas", "Simulación", "Puzles", "Battle Royale"];
+    const platFis = ["PlayStation", "Xbox", "Nintendo" , "PC", "Retro", "Otra"];
+    const platDig = ["Steam", "Epic", "Xbox", "Ubisoft", "EA", "Gog Galaxy", "Luna Amazon", "AppStore(iOS)", "PlayStore(Android)"];
+
+    // AUTH
+    function toggleAuth() {
+        isRegister = !isRegister;
+        document.getElementById('auth-name').style.display = isRegister ? 'block' : 'none';
+        document.getElementById('auth-title').innerText = isRegister ? 'Crear cuenta' : 'Iniciar sesión';
+        document.getElementById('btn-auth').innerText = isRegister ? 'REGISTRARSE' : 'ENTRAR';
+        document.getElementById('toggle-auth').innerText = isRegister ? '¿Ya tienes cuenta? Entra' : '¿No tienes cuenta? Regístrate';
+    }
+
+    async function login() {
+        const email = document.getElementById('auth-email').value;
+        const pass = document.getElementById('auth-pass').value;
+        const name = document.getElementById('auth-name').value;
+        const error = document.getElementById('auth-error');
+
+        const endpoint = isRegister ? '/auth/register' : '/auth/login';
+        const body = isRegister ? {email, password: pass, nombre: name} : {email, password: pass};
+
+        try {
+            const res = await fetch(API + endpoint, {
+                method: 'POST', headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(body)
+            });
+            if (res.ok) {
+                const user = await res.json();
+                if(user) {
+                    usuario = user;
+                    localStorage.setItem('user_gm', JSON.stringify(user));
+                    iniciarApp();
+                } else { error.innerText = "Credenciales incorrectas"; }
+            } else { error.innerText = "Error en el servidor"; }
+        } catch(e) { error.innerText = "Error de conexión"; }
+    }
+
+    function iniciarApp() {
+        document.getElementById('auth-screen').style.display = 'none';
+        document.getElementById('app-screen').style.display = 'block';
+        document.getElementById('user-name-display').innerText = "Hola, " + usuario.nombre;
+        cargarSelects();
+        cargarJuegos();
+    }
+
+    function logout() {
+        localStorage.removeItem('user_gm');
+        location.reload();
+    }
+
+    window.onload = () => {
+        const saved = localStorage.getItem('user_gm');
+        if(saved) { usuario = JSON.parse(saved); iniciarApp(); }
+    };
+
+    // JUEGOS
+    async function cargarJuegos() {
+        const res = await fetch(`${API}/videojuegos?usuarioId=${usuario.id}`);
+        juegos = await res.json();
+        render(juegos);
+    }
+
+    function render(lista) {
+        const grid = document.getElementById('games-grid');
+        grid.innerHTML = "";
+        if(lista.length === 0) { grid.innerHTML = "<p style='color:#666; text-align:center; grid-column:1/-1;'>No tienes juegos aún.</p>"; return; }
+
+        lista.forEach(j => {
+            const img = j.caratula ? `<img src="${j.caratula}" onerror="this.src='media/logo.png'">` : `<div class="no-image">Sin imagen</div>`;
+            const jStr = JSON.stringify(j).replace(/"/g, '&quot;');
+            let clase = j.estado === 'Completado' ? 'tag-completed' : (j.estado === 'Jugando' ? 'tag-playing' : 'tag-pending');
+
+            grid.innerHTML += `
+            <div class="game-card">
+                <div class="card-image">${img}</div>
+                <div class="card-content">
+                    <div class="card-title">${j.titulo}</div>
+                    <div class="card-meta">${j.plataforma} • ${j.anio || '?'}</div>
+                    <div class="tags-container"><span class="tag">${j.genero || 'Gen'}</span><span class="tag ${clase}">${j.estado}</span></div>
+                </div>
+                <div class="card-actions">
+                    <button class="btn-icon btn-edit-orange" alt="Editar" onclick="editar(${jStr})">✏️</button>
+                    <button class="btn-icon btn-delete-orange" alt="Eliminar" onclick="preBorrar(${j.id})">🗑️</button>
+                </div>
+            </div>`;
+        });
+    }
+
+    async function guardarJuego() {
+        const id = document.getElementById('id-juego').value;
+        const data = {
+            titulo: document.getElementById('titulo').value,
+            anio: document.getElementById('anio').value,
+            genero: document.getElementById('genero').value,
+            estado: document.getElementById('estado').value,
+            formato: document.getElementById('formato').value,
+            plataforma: document.getElementById('plataforma').value,
+            caratula: document.getElementById('caratula').value,
+            descripcion: document.getElementById('descripcion').value
+        };
+        const url = id ? `${API}/videojuegos/${id}` : `${API}/videojuegos?usuarioId=${usuario.id}`;
+        const method = id ? 'PUT' : 'POST';
+        await fetch(url, {method, headers:{'Content-Type':'application/json'}, body:JSON.stringify(data)});
+        cerrarModal('modal-form'); cargarJuegos();
+    }
+
+    function preBorrar(id) { document.getElementById('id-borrar').value=id; document.getElementById('modal-delete').style.display='flex'; }
+    async function confirmarBorrado() {
+        await fetch(`${API}/videojuegos/${document.getElementById('id-borrar').value}`, {method:'DELETE'});
+        cerrarModal('modal-delete'); cargarJuegos();
+    }
+
+    // UTILS
+    function cargarSelects() {
+        const gen = document.getElementById('genero'); gen.innerHTML="";
+        const filGen = document.getElementById('filtro-gen'); filGen.innerHTML='<option value="">Todos</option>';
+        generos.forEach(g => { gen.add(new Option(g,g)); filGen.add(new Option(g,g)); });
+
+        const filPlat = document.getElementById('filtro-plat'); filPlat.innerHTML='<option value="">Todas</option>';
+        [...platFis, ...platDig].forEach(p => filPlat.add(new Option(p,p)));
+
+        actualizarPlats();
+    }
+    function actualizarPlats(sel) {
+        const fmt = document.getElementById('formato').value;
+        const plat = document.getElementById('plataforma'); plat.innerHTML="";
+        (fmt === 'Digital' ? platDig : platFis).forEach(p => plat.add(new Option(p,p)));
+        if(sel) plat.value = sel;
+    }
+    function editar(j) {
+        document.getElementById('id-juego').value=j.id;
+        document.getElementById('titulo').value=j.titulo;
+        document.getElementById('anio').value=j.anio;
+        document.getElementById('genero').value=j.genero;
+        document.getElementById('estado').value=j.estado;
+        document.getElementById('formato').value=j.formato || 'Físico';
+        document.getElementById('caratula').value=j.caratula || '';
+        document.getElementById('descripcion').value=j.descripcion || '';
+        actualizarPlats(j.plataforma);
+        document.getElementById('modal-form').style.display='flex';
+    }
+    function aplicarFiltros() {
+        const txt = document.getElementById('filtro-txt').value.toLowerCase();
+        const g = document.getElementById('filtro-gen').value;
+        const p = document.getElementById('filtro-plat').value;
+        const e = document.getElementById('filtro-est').value;
+
+        render(juegos.filter(j =>
+            j.titulo.toLowerCase().includes(txt) &&
+            (g==="" || j.genero===g) &&
+            (p==="" || j.plataforma===p) &&
+            (e==="" || j.estado===e)
+        ));
+    }
+    function cerrarModal(id){ document.getElementById(id).style.display='none'; }
+    function abrirModal(){ document.getElementById('id-juego').value=""; document.getElementById('modal-form').style.display='flex'; }
+    function abrirFiltros(){ document.getElementById('modal-filtros').style.display='flex'; }
+</script>
+</body>
+</html>
