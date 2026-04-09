@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="referrer" content="no-referrer">
-    <link rel="icon" href="media/logo.png" type="image/png">
+    <link rel="icon" href="media/logo.webp" type="image/png">
     <title>Games Meeting | Gestor de biblioteca gamer</title>
     <link rel="stylesheet" href="styles.css">
 </head>
@@ -12,7 +12,7 @@
 
 <div id="auth-screen">
     <div class="login-card">
-        <img src="media/logo.png" alt="Logo" class="login-logo-img">
+        <img src="media/logo.webp" alt="Logo" class="login-logo-img">
         <h2 id="auth-title" style="color: var(--sidebar); margin-top: 0;">Iniciar sesión</h2>
 
         <input type="text" id="auth-name" class="login-input" placeholder="Tu nombre" style="display:none;">
@@ -29,7 +29,7 @@
     <div class="app-container">
         <div class="sidebar">
             <div class="logo">
-                <img src="media/logo.png" style="width: 50px;" alt="Icon">
+                <img src="media/logo.webp" style="width: 50px;" alt="Icon">
                 <div class="logo-text">Games Meeting</div>
             </div>
             <div class="menu-item active" onclick="cargarJuegos()"><span class="icon">📚</span> <span class="text">Mi biblioteca</span></div>
@@ -252,7 +252,7 @@
 
         let urlCaratula = document.getElementById('caratula').value.trim();
         if (urlCaratula === "") {
-            urlCaratula = "media/logo.png";
+            urlCaratula = "media/logo.webp";
         }
 
         const data = {
