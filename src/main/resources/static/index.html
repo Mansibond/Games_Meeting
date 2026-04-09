@@ -35,7 +35,7 @@
             <div class="menu-item active" onclick="cargarJuegos()"><span class="icon">📚</span> <span class="text">Mi biblioteca</span></div>
             <div class="menu-item" onclick="abrirFiltros()"><span class="icon">🔍</span> <span class="text">Filtrar...</span></div>
             <div class="menu-item" onclick="abrirModal()"><span class="icon">➕</span> <span class="text">Añadir juego</span></div>
-            <div class="menu-item" onclick="logout()" style="margin-top: auto;"><span class="icon">🚪</span> <span class="text">Cerrar sesión</span></div>
+            <div class="menu-item btn-logout" onclick="logout()"><span class="icon">🚪</span> <span class="text">Cerrar sesión</span></div>
             <div class="footer-info">&copy; 2026 Adrián Mansilla <br>Proyecto Intermodular</div>
         </div>
 
@@ -249,6 +249,12 @@
      */
     async function guardarJuego() {
         const id = document.getElementById('id-juego').value;
+
+        let urlCaratula = document.getElementById('caratula').value.trim();
+        if (urlCaratula === "") {
+            urlCaratula = "media/logo.png";
+        }
+
         const data = {
             titulo: document.getElementById('titulo').value,
             anio: document.getElementById('anio').value,
@@ -256,7 +262,7 @@
             estado: document.getElementById('estado').value,
             formato: document.getElementById('formato').value,
             plataforma: document.getElementById('plataforma').value,
-            caratula: document.getElementById('caratula').value,
+            caratula: urlCaratula,
             descripcion: document.getElementById('descripcion').value
         };
         const url = id ? `${API}/videojuegos/${id}` : `${API}/videojuegos?usuarioId=${usuario.id}`;
