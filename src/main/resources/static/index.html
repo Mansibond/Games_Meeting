@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="referrer" content="no-referrer">
+    <link rel="icon" href="media/logo.png" type="image/png">
     <title>Games Meeting | Gestor de biblioteca gamer</title>
     <link rel="stylesheet" href="styles.css">
 </head>
@@ -95,7 +96,7 @@
 </div>
 
 <script>
-    const API = "http://localhost:8080/api";
+    const API = "/api";
     let usuario = null;
     let juegos = [];
     let isRegister = false;
@@ -133,6 +134,7 @@
                 if(user) {
                     usuario = user;
                     localStorage.setItem('user_gm', JSON.stringify(user));
+                    localStorage.setItem('token_gm', user.token);
                     iniciarApp();
                 } else { error.innerText = "Credenciales incorrectas"; }
             } else { error.innerText = "Error en el servidor"; }
@@ -149,6 +151,7 @@
 
     function logout() {
         localStorage.removeItem('user_gm');
+        localStorage.removeItem('token_gm');
         location.reload();
     }
 
@@ -159,7 +162,21 @@
 
     // JUEGOS
     async function cargarJuegos() {
-        const res = await fetch(`${API}/videojuegos?usuarioId=${usuario.id}`);
+        const token = localStorage.getItem('token_gm'); // Recuperamos el token
+
+        const res = await fetch(`${API}/videojuegos?usuarioId=${usuario.id}`, {
+            headers: {
+                'Authorization': 'Bearer ' + token // Se lo enviamos al servidor
+            }
+        });
+
+        // Si el servidor nos rechaza (ej. token caducado o falso)
+        if (res.status === 403) {
+            alert("Tu sesión ha caducado por seguridad. Vuelve a iniciar sesión.");
+            logout();
+            return;
+        }
+
         juegos = await res.json();
         render(juegos);
     }
@@ -204,8 +221,33 @@
         };
         const url = id ? `${API}/videojuegos/${id}` : `${API}/videojuegos?usuarioId=${usuario.id}`;
         const method = id ? 'PUT' : 'POST';
-        await fetch(url, {method, headers:{'Content-Type':'application/json'}, body:JSON.stringify(data)});
-        cerrarModal('modal-form'); cargarJuegos();
+        const token = localStorage.getItem('token_gm'); // Recuperamos el token
+
+        await fetch(url, {
+            method: method,
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + token // Se lo enviamos al servidor
+            },
+            body: JSON.stringify(data)
+        });
+
+        cerrarModal('modal-form');
+        cargarJuegos();
+    }
+
+    async function confirmarBorrado() {
+        const token = localStorage.getItem('token_gm'); // Recuperamos el token
+
+        await fetch(`${API}/videojuegos/${document.getElementById('id-borrar').value}`, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': 'Bearer ' + token // Se lo enviamos al servidor
+            }
+        });
+
+        cerrarModal('modal-delete');
+        cargarJuegos();
     }
 
     function preBorrar(id) { document.getElementById('id-borrar').value=id; document.getElementById('modal-delete').style.display='flex'; }
