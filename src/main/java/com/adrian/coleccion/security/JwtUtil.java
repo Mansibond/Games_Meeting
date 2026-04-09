@@ -1,6 +1,5 @@
 package com.adrian.coleccion.security;
 
-import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
@@ -12,7 +11,7 @@ import java.util.Date;
 @Component
 public class JwtUtil {
 
-    // La "firma" secreta de tu aplicación. (En un proyecto real se guarda oculta)
+    // La "firma" secreta de la aplicación. (En un proyecto real se guarda oculta)
     private static final Key SECRET_KEY = Keys.secretKeyFor(SignatureAlgorithm.HS256);
     private static final long EXPIRATION_TIME = 86400000; // 1 día en milisegundos
 

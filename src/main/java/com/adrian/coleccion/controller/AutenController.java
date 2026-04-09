@@ -17,7 +17,6 @@ public class AutenController {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
-    // Inyectamos el encriptador de contraseñas
     @Autowired
     private PasswordEncoder passwordEncoder;
 
@@ -30,7 +29,6 @@ public class AutenController {
             throw new RuntimeException("El email ya existe");
         }
 
-        // MAGIA AQUÍ: Cogemos la contraseña plana, la encriptamos y la volvemos a guardar en el objeto
         String passwordEncriptada = passwordEncoder.encode(usuario.getPassword());
         usuario.setPassword(passwordEncriptada);
 
@@ -45,9 +43,9 @@ public class AutenController {
         Usuario usuario = usuarioRepository.findByEmail(email);
 
         if (usuario != null && passwordEncoder.matches(passwordPlana, usuario.getPassword())) {
-            // ¡LOGIN CORRECTO! Generamos la "pulsera"
+            // ¡LOGIN CORRECTO! Aquí generamos la "pulsera"
             String token = jwtUtil.generarToken(email);
-            // Se la ponemos al usuario
+            // Y aquí se la ponemos al usuario
             usuario.setToken(token);
             return usuario;
         } else {

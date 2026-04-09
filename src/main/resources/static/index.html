@@ -107,6 +107,10 @@
     const platDig = ["Steam", "Epic", "Xbox", "Ubisoft", "EA", "Gog Galaxy", "Luna Amazon", "AppStore(iOS)", "PlayStore(Android)"];
 
     // AUTH
+    /**
+     * Función para alternar entre los modos de autenticación (login y registro).
+     * Cambia el estado de `isRegister`, muestra u oculta el campo de nombre, y actualiza los textos de los botones y títulos según el modo actual.
+     */
     function toggleAuth() {
         isRegister = !isRegister;
         document.getElementById('auth-name').style.display = isRegister ? 'block' : 'none';
@@ -115,6 +119,12 @@
         document.getElementById('toggle-auth').innerText = isRegister ? '¿Ya tienes cuenta? Entra' : '¿No tienes cuenta? Regístrate';
     }
 
+    /**
+     * Función para manejar tanto el login como el registro de usuarios.
+     * Dependiendo del estado de `isRegister`, se enviará la solicitud al endpoint correspondiente.
+     * En caso de éxito, se almacenará el usuario y token en localStorage y se iniciará la aplicación.
+     * Si ocurre algún error, se mostrará un mensaje adecuado al usuario.
+     */
     async function login() {
         const email = document.getElementById('auth-email').value;
         const pass = document.getElementById('auth-pass').value;
@@ -141,6 +151,11 @@
         } catch(e) { error.innerText = "Error de conexión"; }
     }
 
+    /**
+     * Función para iniciar la aplicación después de un login o registro exitoso.
+     * Oculta la pantalla de autenticación, muestra la pantalla principal, actualiza el saludo con el nombre del usuario,
+     * y carga tanto los géneros/plataformas para los selects como los juegos del usuario.
+     */
     function iniciarApp() {
         document.getElementById('auth-screen').style.display = 'none';
         document.getElementById('app-screen').style.display = 'block';
@@ -149,18 +164,32 @@
         cargarJuegos();
     }
 
+    /**
+     * Función para cerrar la sesión del usuario.
+     * Elimina los datos del usuario y el token del localStorage, y recarga la página para mostrar la pantalla de autenticación.
+     */
     function logout() {
         localStorage.removeItem('user_gm');
         localStorage.removeItem('token_gm');
         location.reload();
     }
-
+    
+    /**
+     * Al cargar la página, se verifica si hay un usuario guardado en localStorage.
+     * Si existe, se parsea el usuario y se inicia la aplicación automáticamente, manteniendo la sesión activa.
+     */
     window.onload = () => {
         const saved = localStorage.getItem('user_gm');
         if(saved) { usuario = JSON.parse(saved); iniciarApp(); }
     };
 
     // JUEGOS
+    /**
+     * Función para cargar los juegos del usuario desde el servidor.
+     * Envía una solicitud GET al endpoint de videojuegos con el ID del usuario y el token de autenticación.
+     * Si la respuesta es exitosa, se almacenan los juegos en la variable `juegos` y se renderizan en la interfaz.
+     * Si el servidor responde con un estado 403, se asume que el token ha caducado o es inválido, se muestra un mensaje de alerta y se cierra la sesión.
+     */
     async function cargarJuegos() {
         const token = localStorage.getItem('token_gm'); // Recuperamos el token
 
@@ -170,7 +199,7 @@
             }
         });
 
-        // Si el servidor nos rechaza (ej. token caducado o falso)
+        // Si el servidor rechaza (ej. token caducado o falso)
         if (res.status === 403) {
             alert("Tu sesión ha caducado por seguridad. Vuelve a iniciar sesión.");
             logout();
@@ -181,6 +210,11 @@
         render(juegos);
     }
 
+    /**
+     * Función para renderizar la lista de juegos en la interfaz.
+     * Toma una lista de juegos como argumento y genera el HTML correspondiente para cada juego, mostrando su información y acciones disponibles.
+     * Si la lista está vacía, muestra un mensaje indicando que no hay juegos.
+     */
     function render(lista) {
         const grid = document.getElementById('games-grid');
         grid.innerHTML = "";
@@ -207,6 +241,12 @@
         });
     }
 
+    /**
+     * Función para guardar un juego, ya sea creando uno nuevo o actualizando uno existente.
+     * Recopila los datos del formulario, determina si se trata de una creación o actualización según la presencia de un ID,
+     * y envía la solicitud correspondiente al servidor con el token de autenticación.
+     * Después de guardar, cierra el modal y recarga la lista de juegos.
+     */
     async function guardarJuego() {
         const id = document.getElementById('id-juego').value;
         const data = {
@@ -236,6 +276,10 @@
         cargarJuegos();
     }
 
+    /**
+     * Función para preparar el borrado de un juego.
+     * Toma el ID del juego a borrar, lo almacena en un campo oculto y muestra el modal de confirmación de borrado.
+     */
     async function confirmarBorrado() {
         const token = localStorage.getItem('token_gm'); // Recuperamos el token
 
@@ -250,6 +294,10 @@
         cargarJuegos();
     }
 
+    /**
+     * Función para preparar el borrado de un juego.
+     * Toma el ID del juego a borrar, lo almacena en un campo oculto y muestra el modal de confirmación de borrado.
+     */
     function preBorrar(id) { document.getElementById('id-borrar').value=id; document.getElementById('modal-delete').style.display='flex'; }
     async function confirmarBorrado() {
         await fetch(`${API}/videojuegos/${document.getElementById('id-borrar').value}`, {method:'DELETE'});
@@ -257,6 +305,11 @@
     }
 
     // UTILS
+    /**
+     * Función para cargar los géneros y plataformas en los selects del formulario y de los filtros.
+     * Limpia las opciones actuales y agrega las nuevas opciones basadas en las listas predefinidas de géneros y plataformas.
+     * También actualiza las plataformas disponibles en el formulario según el formato seleccionado.
+     */
     function cargarSelects() {
         const gen = document.getElementById('genero'); gen.innerHTML="";
         const filGen = document.getElementById('filtro-gen'); filGen.innerHTML='<option value="">Todos</option>';
@@ -267,12 +320,23 @@
 
         actualizarPlats();
     }
+
+    /**
+     * Función para actualizar las opciones de plataforma en el formulario según el formato seleccionado.
+     * Si el formato es "Digital", se muestran las plataformas digitales; si es "Físico", se muestran las plataformas físicas.
+     * También permite seleccionar una plataforma específica si se proporciona un valor de selección.
+     */
     function actualizarPlats(sel) {
         const fmt = document.getElementById('formato').value;
         const plat = document.getElementById('plataforma'); plat.innerHTML="";
         (fmt === 'Digital' ? platDig : platFis).forEach(p => plat.add(new Option(p,p)));
         if(sel) plat.value = sel;
     }
+
+    /**
+     * Función para editar un juego existente.
+     * Toma un objeto de juego como argumento, llena el formulario con los datos del juego y muestra el modal de edición.
+     */
     function editar(j) {
         document.getElementById('id-juego').value=j.id;
         document.getElementById('titulo').value=j.titulo;
@@ -285,6 +349,11 @@
         actualizarPlats(j.plataforma);
         document.getElementById('modal-form').style.display='flex';
     }
+
+    /**
+     * Función para aplicar los filtros de búsqueda a la lista de juegos.
+     * Recopila los valores de los campos de filtro, filtra la lista de juegos según esos criterios y vuelve a renderizar la lista filtrada.
+     */
     function aplicarFiltros() {
         const txt = document.getElementById('filtro-txt').value.toLowerCase();
         const g = document.getElementById('filtro-gen').value;
