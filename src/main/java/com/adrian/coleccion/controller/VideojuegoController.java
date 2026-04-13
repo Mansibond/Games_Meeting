@@ -36,12 +36,13 @@ public class VideojuegoController {
         return repositorio.findById(id).map(juego -> {
             juego.setTitulo(datos.getTitulo());
             juego.setAnio(datos.getAnio());
-            juego.setGenero(datos.getGenero());
-            juego.setEstado(datos.getEstado());
-            juego.setFormato(datos.getFormato());
-            juego.setPlataforma(datos.getPlataforma());
             juego.setCaratula(datos.getCaratula());
             juego.setDescripcion(datos.getDescripcion());
+            juego.setPuntuacion(datos.getPuntuacion());
+            juego.setGenero(datos.getGenero());
+            juego.setPlataforma(datos.getPlataforma());
+            juego.setEstado(datos.getEstado());
+            juego.setFormato(datos.getFormato());
             return repositorio.save(juego);
         }).orElse(null);
     }

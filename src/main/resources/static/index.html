@@ -32,10 +32,14 @@
                 <img src="media/logo.webp" style="width: 50px;" alt="Icon">
                 <div class="logo-text">Games Meeting</div>
             </div>
-            <div class="menu-item active" onclick="cargarJuegos()"><span class="icon">📚</span> <span class="text">Mi biblioteca</span></div>
-            <div class="menu-item" onclick="abrirFiltros()"><span class="icon">🔍</span> <span class="text">Filtrar...</span></div>
-            <div class="menu-item" onclick="abrirModal()"><span class="icon">➕</span> <span class="text">Añadir juego</span></div>
-            <div class="menu-item btn-logout" onclick="logout()"><span class="icon">🚪</span> <span class="text">Cerrar sesión</span></div>
+            <div class="menu-item active" onclick="cargarJuegos()"><span class="icon">📚</span> <span class="text">Mi biblioteca</span>
+            </div>
+            <div class="menu-item" onclick="abrirFiltros()"><span class="icon">🔍</span> <span
+                    class="text">Filtrar...</span></div>
+            <div class="menu-item" onclick="abrirModal()"><span class="icon">➕</span> <span
+                    class="text">Añadir juego</span></div>
+            <div class="menu-item btn-logout" onclick="logout()"><span class="icon">🚪</span> <span class="text">Cerrar sesión</span>
+            </div>
             <div class="footer-info">&copy; 2026 Adrián Mansilla <br>Proyecto Intermodular</div>
         </div>
 
@@ -43,7 +47,8 @@
             <div class="header">
                 <h1>Mi colección gamer</h1>
                 <div class="header-right">
-                    <span id="user-name-display" style="margin-right: 15px; color: var(--sidebar); font-weight: bold;"></span>
+                    <span id="user-name-display"
+                          style="margin-right: 15px; color: var(--sidebar); font-weight: bold;"></span>
                 </div>
             </div>
             <div id="games-grid" class="games-grid"></div>
@@ -58,10 +63,21 @@
         <div class="form-grid">
             <div class="form-group"><label>Título</label><input type="text" id="titulo"></div>
             <div class="form-group"><label>Año</label><input type="number" id="anio"></div>
+            <div class="form-group"><label>Estado</label><select id="estado"></select></div>
             <div class="form-group"><label>Género</label><select id="genero"></select></div>
-            <div class="form-group"><label>Estado</label><select id="estado"><option>Pendiente</option><option>Jugando</option><option>Completado</option></select></div>
-            <div class="form-group"><label>Formato</label><select id="formato" onchange="actualizarPlats()"><option>Físico</option><option>Digital</option></select></div>
+            <div class="form-group"><label>Formato</label><select id="formato"></select></div>
             <div class="form-group"><label>Plataforma</label><select id="plataforma"></select></div>
+            <div class="form-group">
+                <label>Puntuación</label>
+                <select id="puntuacion">
+                    <option value="">Sin puntuar</option>
+                    <option value="1">1 Estrella - Malo</option>
+                    <option value="2">2 Estrellas - Regular</option>
+                    <option value="3">3 Estrellas - Bueno</option>
+                    <option value="4">4 Estrellas - Muy Bueno</option>
+                    <option value="5">5 Estrellas - Obra Maestra</option>
+                </select>
+            </div>
             <div class="form-group form-full"><label>Carátula (URL)</label><input type="text" id="caratula"></div>
             <div class="form-group form-full"><label>Descripción</label><textarea id="descripcion"></textarea></div>
         </div>
@@ -72,310 +88,331 @@
     </div>
 </div>
 
-<div id="modal-delete" class="modal-overlay">
-    <div class="modal" style="text-align:center; max-width:400px;">
-        <h2 style="color: var(--delete)">Eliminar</h2>
-        <p>¿Seguro? No habrá vuelta atrás.</p>
-        <input type="hidden" id="id-borrar">
-        <div style="display:flex; justify-content:center; gap:10px;">
-            <button class="btn-cancel" onclick="cerrarModal('modal-delete')">Cancelar</button>
-            <button class="btn-primary" style="background:var(--delete)" onclick="confirmarBorrado()">Eliminar</button>
+    <div id="modal-delete" class="modal-overlay">
+        <div class="modal" style="text-align:center; max-width:400px;">
+            <h2 style="color: var(--delete)">Eliminar</h2>
+            <p>¿Seguro? No habrá vuelta atrás.</p>
+            <input type="hidden" id="id-borrar">
+            <div style="display:flex; justify-content:center; gap:10px;">
+                <button class="btn-cancel" onclick="cerrarModal('modal-delete')">Cancelar</button>
+                <button class="btn-primary" style="background:var(--delete)" onclick="confirmarBorrado()">Eliminar
+                </button>
+            </div>
         </div>
     </div>
-</div>
 
-<div id="modal-filtros" class="modal-overlay">
-    <div class="modal" style="max-width:350px;">
-        <h2>Filtrar</h2>
-        <div class="form-group"><label>Nombre</label><input type="text" id="filtro-txt" onkeyup="aplicarFiltros()"></div>
-        <div class="form-group"><label>Género</label><select id="filtro-gen" onchange="aplicarFiltros()"><option value="">Todos</option></select></div>
-        <div class="form-group"><label>Plataforma</label><select id="filtro-plat" onchange="aplicarFiltros()"><option value="">Todas</option></select></div>
-        <div class="form-group"><label>Estado</label><select id="filtro-est" onchange="aplicarFiltros()"><option value="">Todos</option><option>Pendiente</option><option>Jugando</option><option>Completado</option></select></div>
-        <button class="btn-primary" style="width:100%; margin-top:20px;" onclick="cerrarModal('modal-filtros')">Cerrar</button>
+    <div id="modal-filtros" class="modal-overlay">
+        <div class="modal" style="max-width:350px;">
+            <h2>Filtrar</h2>
+            <div class="form-group"><label>Nombre</label><input type="text" id="filtro-txt" onkeyup="aplicarFiltros()">
+            </div>
+            <div class="form-group"><label>Género</label><select id="filtro-gen" onchange="aplicarFiltros()">
+                <option value="">Todos</option>
+            </select></div>
+            <div class="form-group"><label>Plataforma</label><select id="filtro-plat" onchange="aplicarFiltros()">
+                <option value="">Todas</option>
+            </select></div>
+            <div class="form-group"><label>Estado</label><select id="filtro-est" onchange="aplicarFiltros()">
+                <option value="">Todos</option>
+            </select></div>
+            <button class="btn-primary" style="width:100%; margin-top:20px;" onclick="cerrarModal('modal-filtros')">
+                Cerrar
+            </button>
+        </div>
     </div>
-</div>
 
-<script>
-    const API = "/api";
-    let usuario = null;
-    let juegos = [];
-    let isRegister = false;
+    <script>
+        const API = "/api";
+        let usuario = null;
+        let juegos = [];
+        let isRegister = false;
 
-    // DATOS
-    const generos = ["Acción", "Aventura", "RPG", "Estrategia", "Deportes", "Plataformas", "Simulación", "Puzles", "Battle Royale"];
-    const platFis = ["PlayStation", "Xbox", "Nintendo" , "PC", "Retro", "Otra"];
-    const platDig = ["Steam", "Epic", "Xbox", "Ubisoft", "EA", "Gog Galaxy", "Luna Amazon", "AppStore(iOS)", "PlayStore(Android)"];
+        // DATOS
+        let catalogos = { generos: [], formatos: [], estados: [], plataformas: [] };
 
-    // AUTH
-    /**
-     * Función para alternar entre los modos de autenticación (login y registro).
-     * Cambia el estado de `isRegister`, muestra u oculta el campo de nombre, y actualiza los textos de los botones y títulos según el modo actual.
-     */
-    function toggleAuth() {
-        isRegister = !isRegister;
-        document.getElementById('auth-name').style.display = isRegister ? 'block' : 'none';
-        document.getElementById('auth-title').innerText = isRegister ? 'Crear cuenta' : 'Iniciar sesión';
-        document.getElementById('btn-auth').innerText = isRegister ? 'REGISTRARSE' : 'ENTRAR';
-        document.getElementById('toggle-auth').innerText = isRegister ? '¿Ya tienes cuenta? Entra' : '¿No tienes cuenta? Regístrate';
-    }
+        // AUTH
+        /**
+         * Función para alternar entre los modos de autenticación (login y registro).
+         * Cambia el estado de `isRegister`, muestra u oculta el campo de nombre, y actualiza los textos de los botones y títulos según el modo actual.
+         */
+        function toggleAuth() {
+            isRegister = !isRegister;
+            document.getElementById('auth-name').style.display = isRegister ? 'block' : 'none';
+            document.getElementById('auth-title').innerText = isRegister ? 'Crear cuenta' : 'Iniciar sesión';
+            document.getElementById('btn-auth').innerText = isRegister ? 'REGISTRARSE' : 'ENTRAR';
+            document.getElementById('toggle-auth').innerText = isRegister ? '¿Ya tienes cuenta? Entra' : '¿No tienes cuenta? Regístrate';
+        }
 
-    /**
-     * Función para manejar tanto el login como el registro de usuarios.
-     * Dependiendo del estado de `isRegister`, se enviará la solicitud al endpoint correspondiente.
-     * En caso de éxito, se almacenará el usuario y token en localStorage y se iniciará la aplicación.
-     * Si ocurre algún error, se mostrará un mensaje adecuado al usuario.
-     */
-    async function login() {
-        const email = document.getElementById('auth-email').value;
-        const pass = document.getElementById('auth-pass').value;
-        const name = document.getElementById('auth-name').value;
-        const error = document.getElementById('auth-error');
+        /**
+         * Función para manejar tanto el login como el registro de usuarios.
+         * Dependiendo del estado de `isRegister`, se enviará la solicitud al endpoint correspondiente.
+         * En caso de éxito, se almacenará el usuario y token en localStorage y se iniciará la aplicación.
+         * Si ocurre algún error, se mostrará un mensaje adecuado al usuario.
+         */
+        async function login() {
+            const email = document.getElementById('auth-email').value;
+            const pass = document.getElementById('auth-pass').value;
+            const name = document.getElementById('auth-name').value;
+            const error = document.getElementById('auth-error');
 
-        const endpoint = isRegister ? '/auth/register' : '/auth/login';
-        const body = isRegister ? {email, password: pass, nombre: name} : {email, password: pass};
+            const endpoint = isRegister ? '/auth/register' : '/auth/login';
+            const body = isRegister ? {email, password: pass, nombre: name} : {email, password: pass};
 
-        try {
-            const res = await fetch(API + endpoint, {
-                method: 'POST', headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify(body)
+            try {
+                const res = await fetch(API + endpoint, {
+                    method: 'POST', headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(body)
+                });
+                if (res.ok) {
+                    const user = await res.json();
+                    if(user) {
+                        usuario = user;
+                        localStorage.setItem('user_gm', JSON.stringify(user));
+                        localStorage.setItem('token_gm', user.token);
+                        iniciarApp();
+                    } else { error.innerText = "Credenciales incorrectas"; }
+                } else { error.innerText = "Error en el servidor"; }
+            } catch(e) { error.innerText = "Error de conexión"; }
+        }
+
+        /**
+         * Función para iniciar la aplicación después de un login o registro exitoso.
+         * Oculta la pantalla de autenticación, muestra la pantalla principal, actualiza el saludo con el nombre del usuario,
+         * y carga tanto los géneros/plataformas para los selects como los juegos del usuario.
+         */
+        function iniciarApp() {
+            document.getElementById('auth-screen').style.display = 'none';
+            document.getElementById('app-screen').style.display = 'block';
+            document.getElementById('user-name-display').innerText = "Hola, " + usuario.nombre;
+            cargarCatalogos();
+        }
+
+        async function cargarCatalogos() {
+            const token = localStorage.getItem('token_gm');
+            const res = await fetch(`${API}/catalogos`, {
+                headers: { 'Authorization': 'Bearer ' + token }
             });
-            if (res.ok) {
-                const user = await res.json();
-                if(user) {
-                    usuario = user;
-                    localStorage.setItem('user_gm', JSON.stringify(user));
-                    localStorage.setItem('token_gm', user.token);
-                    iniciarApp();
-                } else { error.innerText = "Credenciales incorrectas"; }
-            } else { error.innerText = "Error en el servidor"; }
-        } catch(e) { error.innerText = "Error de conexión"; }
-    }
-
-    /**
-     * Función para iniciar la aplicación después de un login o registro exitoso.
-     * Oculta la pantalla de autenticación, muestra la pantalla principal, actualiza el saludo con el nombre del usuario,
-     * y carga tanto los géneros/plataformas para los selects como los juegos del usuario.
-     */
-    function iniciarApp() {
-        document.getElementById('auth-screen').style.display = 'none';
-        document.getElementById('app-screen').style.display = 'block';
-        document.getElementById('user-name-display').innerText = "Hola, " + usuario.nombre;
-        cargarSelects();
-        cargarJuegos();
-    }
-
-    /**
-     * Función para cerrar la sesión del usuario.
-     * Elimina los datos del usuario y el token del localStorage, y recarga la página para mostrar la pantalla de autenticación.
-     */
-    function logout() {
-        localStorage.removeItem('user_gm');
-        localStorage.removeItem('token_gm');
-        location.reload();
-    }
-    
-    /**
-     * Al cargar la página, se verifica si hay un usuario guardado en localStorage.
-     * Si existe, se parsea el usuario y se inicia la aplicación automáticamente, manteniendo la sesión activa.
-     */
-    window.onload = () => {
-        const saved = localStorage.getItem('user_gm');
-        if(saved) { usuario = JSON.parse(saved); iniciarApp(); }
-    };
-
-    // JUEGOS
-    /**
-     * Función para cargar los juegos del usuario desde el servidor.
-     * Envía una solicitud GET al endpoint de videojuegos con el ID del usuario y el token de autenticación.
-     * Si la respuesta es exitosa, se almacenan los juegos en la variable `juegos` y se renderizan en la interfaz.
-     * Si el servidor responde con un estado 403, se asume que el token ha caducado o es inválido, se muestra un mensaje de alerta y se cierra la sesión.
-     */
-    async function cargarJuegos() {
-        const token = localStorage.getItem('token_gm'); // Recuperamos el token
-
-        const res = await fetch(`${API}/videojuegos?usuarioId=${usuario.id}`, {
-            headers: {
-                'Authorization': 'Bearer ' + token // Se lo enviamos al servidor
-            }
-        });
-
-        // Si el servidor rechaza (ej. token caducado o falso)
-        if (res.status === 403) {
-            alert("Tu sesión ha caducado por seguridad. Vuelve a iniciar sesión.");
-            logout();
-            return;
+            catalogos = await res.json();
+            cargarSelects(); // Llenamos los desplegables
+            cargarJuegos();  // Y por último, cargamos los juegos
         }
 
-        juegos = await res.json();
-        render(juegos);
-    }
-
-    /**
-     * Función para renderizar la lista de juegos en la interfaz.
-     * Toma una lista de juegos como argumento y genera el HTML correspondiente para cada juego, mostrando su información y acciones disponibles.
-     * Si la lista está vacía, muestra un mensaje indicando que no hay juegos.
-     */
-    function render(lista) {
-        const grid = document.getElementById('games-grid');
-        grid.innerHTML = "";
-        if(lista.length === 0) { grid.innerHTML = "<p style='color:#666; text-align:center; grid-column:1/-1;'>No tienes juegos aún.</p>"; return; }
-
-        lista.forEach(j => {
-            const img = j.caratula ? `<img src="${j.caratula}" onerror="this.src='media/logo.png'">` : `<div class="no-image">Sin imagen</div>`;
-            const jStr = JSON.stringify(j).replace(/"/g, '&quot;');
-            let clase = j.estado === 'Completado' ? 'tag-completed' : (j.estado === 'Jugando' ? 'tag-playing' : 'tag-pending');
-
-            grid.innerHTML += `
-            <div class="game-card">
-                <div class="card-image">${img}</div>
-                <div class="card-content">
-                    <div class="card-title">${j.titulo}</div>
-                    <div class="card-meta">${j.plataforma} • ${j.anio || '?'}</div>
-                    <div class="tags-container"><span class="tag">${j.genero || 'Gen'}</span><span class="tag ${clase}">${j.estado}</span></div>
-                </div>
-                <div class="card-actions">
-                    <button class="btn-icon btn-edit-orange" alt="Editar" onclick="editar(${jStr})">✏️</button>
-                    <button class="btn-icon btn-delete-orange" alt="Eliminar" onclick="preBorrar(${j.id})">🗑️</button>
-                </div>
-            </div>`;
-        });
-    }
-
-    /**
-     * Función para guardar un juego, ya sea creando uno nuevo o actualizando uno existente.
-     * Recopila los datos del formulario, determina si se trata de una creación o actualización según la presencia de un ID,
-     * y envía la solicitud correspondiente al servidor con el token de autenticación.
-     * Después de guardar, cierra el modal y recarga la lista de juegos.
-     */
-    async function guardarJuego() {
-        const id = document.getElementById('id-juego').value;
-
-        let urlCaratula = document.getElementById('caratula').value.trim();
-        if (urlCaratula === "") {
-            urlCaratula = "media/logo.webp";
+        /**
+         * Función para cerrar la sesión del usuario.
+         * Elimina los datos del usuario y el token del localStorage, y recarga la página para mostrar la pantalla de autenticación.
+         */
+        function logout() {
+            localStorage.removeItem('user_gm');
+            localStorage.removeItem('token_gm');
+            location.reload();
         }
 
-        const data = {
-            titulo: document.getElementById('titulo').value,
-            anio: document.getElementById('anio').value,
-            genero: document.getElementById('genero').value,
-            estado: document.getElementById('estado').value,
-            formato: document.getElementById('formato').value,
-            plataforma: document.getElementById('plataforma').value,
-            caratula: urlCaratula,
-            descripcion: document.getElementById('descripcion').value
+        /**
+         * Al cargar la página, se verifica si hay un usuario guardado en localStorage.
+         * Si existe, se parsea el usuario y se inicia la aplicación automáticamente, manteniendo la sesión activa.
+         */
+        window.onload = () => {
+            const saved = localStorage.getItem('user_gm');
+            if(saved) { usuario = JSON.parse(saved); iniciarApp(); }
         };
-        const url = id ? `${API}/videojuegos/${id}` : `${API}/videojuegos?usuarioId=${usuario.id}`;
-        const method = id ? 'PUT' : 'POST';
-        const token = localStorage.getItem('token_gm'); // Recuperamos el token
 
-        await fetch(url, {
-            method: method,
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + token // Se lo enviamos al servidor
-            },
-            body: JSON.stringify(data)
-        });
+        // JUEGOS
+        /**
+         * Función para cargar los juegos del usuario desde el servidor.
+         * Envía una solicitud GET al endpoint de videojuegos con el ID del usuario y el token de autenticación.
+         * Si la respuesta es exitosa, se almacenan los juegos en la variable `juegos` y se renderizan en la interfaz.
+         * Si el servidor responde con un estado 403, se asume que el token ha caducado o es inválido, se muestra un mensaje de alerta y se cierra la sesión.
+         */
+        async function cargarJuegos() {
+            const token = localStorage.getItem('token_gm'); // Recuperamos el token
 
-        cerrarModal('modal-form');
-        cargarJuegos();
-    }
+            const res = await fetch(`${API}/videojuegos?usuarioId=${usuario.id}`, {
+                headers: {
+                    'Authorization': 'Bearer ' + token // Se lo enviamos al servidor
+                }
+            });
 
-    /**
-     * Función para preparar el borrado de un juego.
-     * Toma el ID del juego a borrar, lo almacena en un campo oculto y muestra el modal de confirmación de borrado.
-     */
-    async function confirmarBorrado() {
-        const token = localStorage.getItem('token_gm'); // Recuperamos el token
-
-        await fetch(`${API}/videojuegos/${document.getElementById('id-borrar').value}`, {
-            method: 'DELETE',
-            headers: {
-                'Authorization': 'Bearer ' + token // Se lo enviamos al servidor
+            // Si el servidor rechaza (ej. token caducado o falso)
+            if (res.status === 403) {
+                alert("Tu sesión ha caducado por seguridad. Vuelve a iniciar sesión.");
+                logout();
+                return;
             }
-        });
 
-        cerrarModal('modal-delete');
-        cargarJuegos();
-    }
+            juegos = await res.json();
+            render(juegos);
+        }
 
-    /**
-     * Función para preparar el borrado de un juego.
-     * Toma el ID del juego a borrar, lo almacena en un campo oculto y muestra el modal de confirmación de borrado.
-     */
-    function preBorrar(id) { document.getElementById('id-borrar').value=id; document.getElementById('modal-delete').style.display='flex'; }
-    async function confirmarBorrado() {
-        await fetch(`${API}/videojuegos/${document.getElementById('id-borrar').value}`, {method:'DELETE'});
-        cerrarModal('modal-delete'); cargarJuegos();
-    }
+        /**
+         * Función para renderizar la lista de juegos en la interfaz.
+         * Toma una lista de juegos como argumento y genera el HTML correspondiente para cada juego, mostrando su información y acciones disponibles.
+         * Si la lista está vacía, muestra un mensaje indicando que no hay juegos.
+         */
+        function render(lista) {
+            const grid = document.getElementById('games-grid');
+            grid.innerHTML = "";
+            if(lista.length === 0) { grid.innerHTML = "<p style='color:#666; text-align:center; grid-column:1/-1;'>No tienes juegos aún.</p>"; return; }
 
-    // UTILS
-    /**
-     * Función para cargar los géneros y plataformas en los selects del formulario y de los filtros.
-     * Limpia las opciones actuales y agrega las nuevas opciones basadas en las listas predefinidas de géneros y plataformas.
-     * También actualiza las plataformas disponibles en el formulario según el formato seleccionado.
-     */
-    function cargarSelects() {
-        const gen = document.getElementById('genero'); gen.innerHTML="";
-        const filGen = document.getElementById('filtro-gen'); filGen.innerHTML='<option value="">Todos</option>';
-        generos.forEach(g => { gen.add(new Option(g,g)); filGen.add(new Option(g,g)); });
+            lista.forEach(j => {
+                const img = j.caratula ? `<img src="${j.caratula}" onerror="this.src='media/logo.png'">` : `<div class="no-image">Sin imagen</div>`;
+                const jStr = JSON.stringify(j).replace(/"/g, '&quot;');
+                let estadoNombre = j.estado ? j.estado.nombre : 'Desconocido';
+                let clase = estadoNombre === 'Completado' ? 'tag-completed' : (estadoNombre === 'Jugando' ? 'tag-playing' : 'tag-pending');
+                let estrellasHTML = j.puntuacion ? `<div style="color: gold; margin-bottom: 5px;">${'⭐'.repeat(j.puntuacion)}</div>` : '';
 
-        const filPlat = document.getElementById('filtro-plat'); filPlat.innerHTML='<option value="">Todas</option>';
-        [...platFis, ...platDig].forEach(p => filPlat.add(new Option(p,p)));
+                grid.innerHTML += `
+                <div class="game-card">
+                    <div class="card-image">${img}</div>
+                    <div class="card-content">
+                        <div class="card-title">${j.titulo}</div>
+                        ${estrellasHTML}
+                        <div class="card-meta">${j.plataforma ? j.plataforma.nombre : 'Plat'} • ${j.anio || '?'}</div>
+                        <div class="tags-container">
+                            <span class="tag">${j.genero ? j.genero.nombre : 'Gen'}</span>
+                            <span class="tag ${clase}">${estadoNombre}</span>
+                        </div>
+                    </div>
+                    <div class="card-actions">
+                        <button class="btn-icon btn-edit-orange" alt="Editar" onclick="editar(${jStr})">✏️</button>
+                        <button class="btn-icon btn-delete-orange" alt="Eliminar" onclick="preBorrar(${j.id})">🗑️</button>
+                    </div>
+                </div>`;
+            });
+        }
 
-        actualizarPlats();
-    }
+        /**
+         * Función para guardar un juego, ya sea creando uno nuevo o actualizando uno existente.
+         * Recopila los datos del formulario, determina si se trata de una creación o actualización según la presencia de un ID,
+         * y envía la solicitud correspondiente al servidor con el token de autenticación.
+         * Después de guardar, cierra el modal y recarga la lista de juegos.
+         */
+        async function guardarJuego() {
+            const id = document.getElementById('id-juego').value;
 
-    /**
-     * Función para actualizar las opciones de plataforma en el formulario según el formato seleccionado.
-     * Si el formato es "Digital", se muestran las plataformas digitales; si es "Físico", se muestran las plataformas físicas.
-     * También permite seleccionar una plataforma específica si se proporciona un valor de selección.
-     */
-    function actualizarPlats(sel) {
-        const fmt = document.getElementById('formato').value;
-        const plat = document.getElementById('plataforma'); plat.innerHTML="";
-        (fmt === 'Digital' ? platDig : platFis).forEach(p => plat.add(new Option(p,p)));
-        if(sel) plat.value = sel;
-    }
+            let urlCaratula = document.getElementById('caratula').value.trim();
+            if (urlCaratula === "") {
+                urlCaratula = "media/logo.webp";
+            }
 
-    /**
-     * Función para editar un juego existente.
-     * Toma un objeto de juego como argumento, llena el formulario con los datos del juego y muestra el modal de edición.
-     */
-    function editar(j) {
-        document.getElementById('id-juego').value=j.id;
-        document.getElementById('titulo').value=j.titulo;
-        document.getElementById('anio').value=j.anio;
-        document.getElementById('genero').value=j.genero;
-        document.getElementById('estado').value=j.estado;
-        document.getElementById('formato').value=j.formato || 'Físico';
-        document.getElementById('caratula').value=j.caratula || '';
-        document.getElementById('descripcion').value=j.descripcion || '';
-        actualizarPlats(j.plataforma);
-        document.getElementById('modal-form').style.display='flex';
-    }
+            const data = {
+                titulo: document.getElementById('titulo').value,
+                anio: document.getElementById('anio').value,
+                estado: { id: document.getElementById('estado').value },
+                genero: { id: document.getElementById('genero').value },
+                formato: { id: document.getElementById('formato').value },
+                plataforma: { id: document.getElementById('plataforma').value },
+                puntuacion: document.getElementById('puntuacion').value ? parseInt(document.getElementById('puntuacion').value) : null,
+                caratula: urlCaratula,
+                descripcion: document.getElementById('descripcion').value
+            };
+            const url = id ? `${API}/videojuegos/${id}` : `${API}/videojuegos?usuarioId=${usuario.id}`;
+            const method = id ? 'PUT' : 'POST';
+            const token = localStorage.getItem('token_gm');
 
-    /**
-     * Función para aplicar los filtros de búsqueda a la lista de juegos.
-     * Recopila los valores de los campos de filtro, filtra la lista de juegos según esos criterios y vuelve a renderizar la lista filtrada.
-     */
-    function aplicarFiltros() {
-        const txt = document.getElementById('filtro-txt').value.toLowerCase();
-        const g = document.getElementById('filtro-gen').value;
-        const p = document.getElementById('filtro-plat').value;
-        const e = document.getElementById('filtro-est').value;
+            await fetch(url, {
+                method: method,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + token
+                },
+                body: JSON.stringify(data)
+            });
 
-        render(juegos.filter(j =>
-            j.titulo.toLowerCase().includes(txt) &&
-            (g==="" || j.genero===g) &&
-            (p==="" || j.plataforma===p) &&
-            (e==="" || j.estado===e)
-        ));
-    }
-    function cerrarModal(id){ document.getElementById(id).style.display='none'; }
-    function abrirModal(){ document.getElementById('id-juego').value=""; document.getElementById('modal-form').style.display='flex'; }
-    function abrirFiltros(){ document.getElementById('modal-filtros').style.display='flex'; }
-</script>
+            cerrarModal('modal-form');
+            cargarJuegos();
+        }
+
+        /**
+         * Función para preparar el borrado de un juego.
+         * Toma el ID del juego a borrar, lo almacena en un campo oculto y muestra el modal de confirmación de borrado.
+         */
+         function preBorrar(id) {
+            document.getElementById('id-borrar').value=id;
+            document.getElementById('modal-delete').style.display='flex';
+        }
+
+        async function confirmarBorrado() {
+            const token = localStorage.getItem('token_gm');
+
+            await fetch(`${API}/videojuegos/${document.getElementById('id-borrar').value}`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': 'Bearer ' + token
+                }
+            });
+
+            cerrarModal('modal-delete');
+            cargarJuegos();
+        }
+
+        // UTILS
+        /**
+         * Función para cargar los géneros y plataformas en los selects del formulario y de los filtros.
+         * Limpia las opciones actuales y agrega las nuevas opciones basadas en las listas predefinidas de géneros y plataformas.
+         * También actualiza las plataformas disponibles en el formulario según el formato seleccionado.
+         */
+        function cargarSelects() {
+            const llenar = (idSel, idFil, lista) => {
+                const sel = document.getElementById(idSel);
+                if (sel) sel.innerHTML = "";
+
+                const fil = document.getElementById(idFil);
+                if (fil) fil.innerHTML = '<option value="">Todos</option>';
+
+                if (!lista) return;
+
+                lista.forEach(item => {
+                    if (sel) sel.add(new Option(item.nombre, item.id));
+                    if (fil) fil.add(new Option(item.nombre, item.id));
+                });
+            };
+
+            llenar('genero', 'filtro-gen', catalogos.generos);
+            llenar('estado', 'filtro-est', catalogos.estados);
+            llenar('plataforma', 'filtro-plat', catalogos.plataformas);
+            llenar('formato', null, catalogos.formatos);
+        }
+
+        /**
+         * Función para editar un juego existente.
+         * Toma un objeto de juego como argumento, llena el formulario con los datos del juego y muestra el modal de edición.
+         */
+        function editar(j) {
+            document.getElementById('id-juego').value=j.id;
+            document.getElementById('titulo').value=j.titulo;
+            document.getElementById('anio').value=j.anio;
+            document.getElementById('genero').value=j.genero ? j.genero.id : '';
+            document.getElementById('estado').value=j.estado ? j.estado.id : '';
+            document.getElementById('formato').value=j.formato ? j.formato.id : '';
+            document.getElementById('plataforma').value=j.plataforma ? j.plataforma.id : '';
+            document.getElementById('puntuacion').value = j.puntuacion || '';
+            document.getElementById('caratula').value=j.caratula || '';
+            document.getElementById('descripcion').value=j.descripcion || '';
+            document.getElementById('modal-form').style.display='flex';
+        }
+
+        /**
+         * Función para aplicar los filtros de búsqueda a la lista de juegos.
+         * Recopila los valores de los campos de filtro, filtra la lista de juegos según esos criterios y vuelve a renderizar la lista filtrada.
+         */
+        function aplicarFiltros() {
+            const txt = document.getElementById('filtro-txt').value.toLowerCase();
+            const g = document.getElementById('filtro-gen').value;
+            const p = document.getElementById('filtro-plat').value;
+            const e = document.getElementById('filtro-est').value;
+
+            render(juegos.filter(j => {
+                const matchTxt = j.titulo.toLowerCase().includes(txt);
+                const matchGen = g === "" || (j.genero && j.genero.id == g);
+                const matchPlat = p === "" || (j.plataforma && j.plataforma.id == p);
+                const matchEst = e === "" || (j.estado && j.estado.id == e);
+
+                return matchTxt && matchGen && matchPlat && matchEst;
+            }));
+        }
+        function cerrarModal(id){ document.getElementById(id).style.display='none'; }
+        function abrirModal(){ document.getElementById('id-juego').value=""; document.getElementById('modal-form').style.display='flex'; }
+        function abrirFiltros(){ document.getElementById('modal-filtros').style.display='flex'; }
+    </script>
 </body>
 </html>
