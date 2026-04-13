@@ -1,9 +1,0 @@
-### Enviar nuevo juego (POST)
-POST http://localhost:8080/nuevo-juego
-Content-Type: application/json
-
-{
-  "titulo": "Zelda: Ocarina of Time",
-  "plataforma": "Nintendo 64",
-  "estado": "Pendiente"
-}
