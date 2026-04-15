@@ -16,7 +16,7 @@ public class Usuario {
     private String password;
     private String nombre;
 
-    @Transient // Esto le dice a MySQL que NO cree una columna para esto
+    @Transient
     private String token;
 
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL)

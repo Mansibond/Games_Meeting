@@ -32,13 +32,11 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/", "/index.html", "/styles.css", "/main.js", "/media/**", "/logo.jpg").permitAll()
-                        // Dejamos libres SOLO el registro y el login
                         .requestMatchers("/api/auth/register", "/api/auth/login").permitAll()
                         // EXIGIMOS token para CUALQUIER otra cosa (listar, borrar, crear juegos)
                         .anyRequest().authenticated()
                 );
 
-        // Añadimos a nuestro guardia en la puerta antes de que pasen
         http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();

@@ -43,9 +43,7 @@ public class AutenController {
         Usuario usuario = usuarioRepository.findByEmail(email);
 
         if (usuario != null && passwordEncoder.matches(passwordPlana, usuario.getPassword())) {
-            // ¡LOGIN CORRECTO! Aquí generamos la "pulsera"
             String token = jwtUtil.generarToken(email);
-            // Y aquí se la ponemos al usuario
             usuario.setToken(token);
             return usuario;
         } else {
