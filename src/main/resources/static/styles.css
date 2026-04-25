@@ -1,79 +1,224 @@
 :root {
-    --bg: #F4E2DE;
-    --sidebar: #025259;
-    --primary: #007172;
-    --edit: #F29325;
-    --delete: #D94F04;
-    --text: #2c3e50;
+    --bg: #0d1117;           /* Fondo negro azulado profundo */
+    --sidebar: #161b22;      /* Barra lateral un poco más clara */
+    --primary: #00f2ff;      /* Cian neón */
+    --secondary: #39ff14;    /* Verde neón */
+    --pink: #d900ff;         /* Rosa/Magenta neón */
+    --edit: #00f2ff;         /* Color para editar (Cian) */
+    --delete: #ff0055;       /* Color para eliminar (Rojo neón) */
+    --text: #e6edf3;         /* Texto claro */
     --white: #ffffff;
+
+    /* Efectos de resplandor */
+    --glow-cyan: 0 0 10px rgba(0, 242, 255, 0.4);
+    --glow-pink: 0 0 12px rgba(217, 0, 255, 0.5);
 }
 
-body { margin: 0; font-family: 'Segoe UI', sans-serif; background-color: var(--bg); height: 100vh; overflow: hidden; display:flex; flex-direction:column; }
+body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background-color: var(--bg);
+    color: var(--text);
+    height: 100vh;
+    overflow: hidden;
+    display:flex;
+    flex-direction:column;
+}
 
-/* AUTH SCREEN */
+/* =========================================
+   PANTALLA DE LOGIN
+========================================= */
 #auth-screen {
     position: fixed; top: 0; left: 0; width: 100%; height: 100%;
     background-image: url('media/Fondo.webp');
     background-size: cover; background-position: center;
     display: flex; justify-content: center; align-items: center; z-index: 2000;
 }
+
 .login-card {
-    background: rgba(255, 255, 255, 0.95); padding: 40px; border-radius: 15px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.5); width: 350px; text-align: center;
+    background: rgba(22, 27, 34, 0.95);
+    padding: 40px;
+    border-radius: 15px;
+    border: 1px solid var(--pink);
+    box-shadow: var(--glow-pink);
+    width: 350px;
+    text-align: center;
     display: flex; flex-direction: column; align-items: center;
 }
-.login-logo-img { width: 100px; margin-bottom: 20px; }
-.login-input { width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
-.btn-login { width: 100%; padding: 12px; background: var(--primary); color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
+
+.login-logo-img { width: 120px; margin-bottom: 20px; }
+
+.login-input {
+    width: 100%; padding: 12px; margin-bottom: 15px;
+    border: 1px solid #30363d; border-radius: 8px;
+    box-sizing: border-box; background: #0d1117; color: white; outline: none;
+}
+
+.login-input:focus { border-color: var(--primary); box-shadow: var(--glow-cyan); }
+
+.btn-login {
+    width: 100%; padding: 12px; background: var(--pink);
+    color: white; border: none; border-radius: 8px;
+    cursor: pointer; font-weight: bold; transition: 0.3s;
+}
+
+.btn-login:hover { transform: scale(1.02); box-shadow: var(--glow-pink); }
 .toggle-link { margin-top: 15px; color: var(--primary); cursor: pointer; text-decoration: underline; font-size: 0.9rem; }
 
-/* APP SCREEN */
+/* =========================================
+   PANTALLA PRINCIPAL (APP)
+========================================= */
 #app-screen { display: none; height: 100%; width: 100%; }
 .app-container { display: flex; height: 100%; }
 
-.sidebar { width: 250px; background: var(--sidebar); color: var(--white); display: flex; flex-direction: column; padding: 20px; transition: width 0.3s; z-index:100; }
-.main-content { flex-grow: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; }
-.header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; background: rgba(255,255,255,0.6); padding: 15px; border-radius: 8px; }
+/* BARRA LATERAL */
+.sidebar {
+    width: 250px; background: var(--sidebar); color: var(--white);
+    display: flex; flex-direction: column; padding: 20px;
+    transition: width 0.3s; z-index:100;
+    border-right: 1px solid #30363d;
+}
 
-.games-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; }
-.game-card { background: var(--white); border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.05); display: flex; flex-direction: column; transition: transform 0.2s; }
-.game-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,113,114,0.2); }
-.card-image { height: 200px; background: #eee; display: flex; align-items: center; justify-content: center; }
+.logo { text-align: center; margin-bottom: 30px; display: flex; align-items: center; justify-content: center; gap: 10px;}
+.logo-text { font-weight: bold; color: var(--pink); text-shadow: var(--glow-pink); font-size: 1.2rem;}
+
+.menu-item {
+    padding: 10px 15px;
+    cursor: pointer;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    margin-bottom: 5px;
+    color: var(--pink);
+    text-shadow: var(--glow-pink);
+    border: 1px solid transparent;
+}
+.menu-item:hover {
+    background: rgba(0, 242, 255, 0.1);
+    color: var(--primary);
+    text-shadow: var(--glow-cyan);
+    border: 1px solid var(--primary);
+    border-left: 4px solid var(--primary);
+    box-shadow: var(--glow-cyan);
+}
+
+.menu-item.active {
+    font-weight: bold;
+}
+
+.footer-info { margin-top: auto; font-size: 0.8rem; text-align: center; color: #666; }
+
+/* CONTENIDO Y CABECERA */
+.main-content { flex-grow: 1; padding: 30px; overflow-y: auto; display: flex; flex-direction: column; }
+
+.header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 30px; padding-bottom: 15px;
+    border-bottom: 1px solid #30363d;
+}
+
+.header h1 {
+    margin: 0;
+    color: var(--pink);
+    text-shadow: var(--glow-pink);
+    font-size: 2rem;
+}
+
+/* =========================================
+   TARJETAS DE JUEGOS
+========================================= */
+.games-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 25px; }
+
+.game-card {
+    background: var(--sidebar);
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid #30363d;
+    display: flex; flex-direction: column;
+    transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s;
+}
+
+.game-card:hover {
+    transform: translateY(-5px);
+    border-color: var(--primary);
+    box-shadow: var(--glow-cyan);
+}
+
+.card-image { height: 200px; background: #000; display: flex; align-items: center; justify-content: center; }
 .card-image img { width: 100%; height: 100%; object-fit: cover; }
-.no-image { color: #999; }
-.card-content { padding: 15px; flex-grow: 1; }
-.card-title { font-weight: bold; color: var(--sidebar); margin-bottom: 5px; }
-.card-meta { font-size: 0.85rem; color: #666; margin-bottom: 10px; }
-.tags-container { display: flex; gap: 5px; flex-wrap: wrap; }
-.tag { padding: 3px 8px; border-radius: 4px; font-size: 0.75rem; background: #ecf0f1; }
-.tag-completed { background: #d5f5e3; color: #27ae60; }
-.tag-pending { background: #fad7a0; color: #e67e22; }
-.tag-playing { background: #d6eaf8; color: #2980b9; }
-.card-actions { padding: 10px; background: #fafafa; display: flex; justify-content: flex-end; gap: 10px; border-top: 1px solid #eee; }
-.btn-icon { background: none; border: none; cursor: pointer; font-size: 1.2rem; }
+.no-image { color: #666; }
+
+.card-content { padding: 15px; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between;}
+.card-title { font-weight: bold; color: var(--primary); margin-bottom: 5px; font-size: 1.1rem; }
+.card-meta { font-size: 0.85rem; color: #8b949e; margin-bottom: 10px; }
+
+.tags-container { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 10px; }
+.tag { padding: 4px 10px; border-radius: 15px; font-size: 0.75rem; background: #0d1117; border: 1px solid #30363d;}
+.tag-completed { color: #39ff14; border-color: rgba(57, 255, 20, 0.3); } /* Verde Neón */
+.tag-pending { color: #ff9d00; border-color: rgba(255, 157, 0, 0.3); }   /* Naranja */
+.tag-playing { color: #00f2ff; border-color: rgba(0, 242, 255, 0.3); }    /* Cian */
+
+/* BOTONES INVISIBLES DE LA TARJETA (Solo el icono) */
+.card-actions {
+    padding: 10px 15px;
+    background: #0d1117;
+    display: flex; justify-content: flex-end; gap: 15px;
+    border-top: 1px solid #30363d;
+}
+
+.btn-icon {
+    background: transparent; border: none; cursor: pointer;
+    font-size: 1.3rem; padding: 5px;
+    transition: transform 0.2s, text-shadow 0.2s;
+}
+
 .btn-edit-orange { color: var(--edit); }
+.btn-edit-orange:hover { transform: scale(1.2); text-shadow: var(--glow-cyan); }
+
 .btn-delete-orange { color: var(--delete); }
-.btn-logout { margin-top: auto; }
+.btn-delete-orange:hover { transform: scale(1.2); text-shadow: 0 0 10px rgba(255, 0, 85, 0.6); }
 
-.modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: none; justify-content: center; align-items: center; z-index: 1000; }
-.modal { background: white; padding: 20px; border-radius: 10px; width: 90%; max-width: 500px; border-top: 5px solid var(--primary); max-height: 90vh; overflow-y: auto; }
-.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+/* =========================================
+   MODALES
+========================================= */
+.modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: none; justify-content: center; align-items: center; z-index: 1000; backdrop-filter: blur(5px);}
+
+.modal {
+    background: var(--sidebar); color: var(--text); padding: 25px;
+    border-radius: 12px; width: 90%; max-width: 500px;
+    border: 1px solid var(--pink); box-shadow: var(--glow-pink);
+    max-height: 90vh; overflow-y: auto;
+}
+
+.modal h2 { margin-top: 0; color: var(--pink); }
+
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
 .form-full { grid-column: span 2; }
-.form-group input, .form-group select, .form-group textarea { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; margin-top: 5px; }
-.btn-cancel { background: #ccc; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; }
-.btn-primary { background: var(--primary); color: white; padding: 8px 15px; border-radius: 5px; border:none; cursor:pointer;}
+.form-group input, .form-group select, .form-group textarea {
+    width: 100%; padding: 10px; border: 1px solid #30363d; border-radius: 8px; margin-top: 5px;
+    background: #0d1117; color: white; outline: none; box-sizing: border-box;
+}
+.form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+    border-color: var(--primary); box-shadow: var(--glow-cyan);
+}
 
-.logo { text-align: center; margin-bottom: 30px; }
-.menu-item { padding: 10px; cursor: pointer; display: flex; gap: 10px; align-items: center; border-radius: 5px; }
-.menu-item:hover { background: rgba(255,255,255,0.1); }
-.footer-info { margin-top: auto; font-size: 0.8rem; text-align: center; color: rgba(255,255,255,0.5); }
+.btn-cancel { background: transparent; color: #8b949e; border: 1px solid #30363d; padding: 10px 15px; border-radius: 8px; cursor: pointer; transition: 0.3s;}
+.btn-cancel:hover { background: #30363d; color: white;}
 
+.btn-primary { background: var(--pink); color: white; padding: 10px 15px; border-radius: 8px; border:none; cursor:pointer; font-weight: bold; transition: 0.3s;}
+.btn-primary:hover { box-shadow: var(--glow-pink); transform: scale(1.02);}
+
+/* =========================================
+   RESPONSIVE (Móviles)
+========================================= */
 @media (max-width: 768px) {
     .btn-logout { margin-top: 0; }
-    .sidebar { width: 70px; padding: 15px 5px; align-items: center; overflow-x: auto; }
+    .sidebar { width: 70px; padding: 15px 5px; align-items: center; overflow-x: hidden; }
     .logo-text, .menu-item .text, .footer-info { display: none; }
-    .logo { margin-bottom: 20px; border: none; }
-    .menu-item { justify-content: center; width: 100%; }
+    .logo { margin-bottom: 20px; }
+    .menu-item { justify-content: center; width: 100%; padding: 12px 0;}
     .menu-item .icon { font-size: 1.6rem; }
     .header { flex-direction: column; gap: 10px; text-align: center; }
     .games-grid { grid-template-columns: 1fr; }

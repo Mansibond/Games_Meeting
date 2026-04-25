@@ -13,7 +13,7 @@
 <div id="auth-screen">
     <div class="login-card">
         <img src="media/logo.webp" alt="Logo" class="login-logo-img">
-        <h2 id="auth-title" style="color: var(--sidebar); margin-top: 0;">Iniciar sesión</h2>
+        <h2 id="auth-title" style="color: var(--secondary); margin-top: 0;">Iniciar sesión</h2>
 
         <input type="text" id="auth-name" class="login-input" placeholder="Tu nombre" style="display:none;">
         <input type="email" id="auth-email" class="login-input" placeholder="Correo electrónico">
@@ -22,6 +22,7 @@
         <button id="btn-auth" class="btn-login" onclick="login()">ENTRAR</button>
         <p id="auth-error" style="color: red; font-size: 0.9rem; margin-top: 10px;"></p>
         <div class="toggle-link" id="toggle-auth" onclick="toggleAuth()">¿No tienes cuenta? Regístrate aquí</div>
+        <div class="toggle-link" onclick="solicitarRecuperacion()" style="color: var(--primary); margin-bottom: 10px;">¿Has olvidado tu contraseña?</div>
     </div>
 </div>
 
@@ -48,7 +49,7 @@
                 <h1>Mi colección gamer</h1>
                 <div class="header-right">
                     <span id="user-name-display"
-                          style="margin-right: 15px; color: var(--sidebar); font-weight: bold;"></span>
+                          style="margin-right: 15px; color: var(--secondary); text-shadow: 0 0 8px rgba(57, 255, 20, 0.5); font-weight: bold;"></span>
                 </div>
             </div>
             <div id="games-grid" class="games-grid"></div>

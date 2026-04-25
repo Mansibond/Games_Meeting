@@ -161,6 +161,7 @@ const API = "/api";
 
         /**
          * Función para guardar un juego, ya sea creando uno nuevo o actualizando uno existente.
+         * Si el campo de carátula está vacío, se asigna una imagen por defecto. Si se proporciona una URL de carátula, se valida que sea un enlace web que termine en un formato de imagen válido.
          * Recopila los datos del formulario, determina si se trata de una creación o actualización según la presencia de un ID,
          * y envía la solicitud correspondiente al servidor con el token de autenticación.
          * Después de guardar, cierra el modal y recarga la lista de juegos.
@@ -171,6 +172,13 @@ const API = "/api";
             let urlCaratula = document.getElementById('caratula').value.trim();
             if (urlCaratula === "") {
                 urlCaratula = "media/logo.webp";
+            }else{
+                const regexImagen = /^https?:\/\/.*\.(jpeg|jpg|gif|png|webp|avif)(\?.*)?$/i;
+
+                if (!regexImagen.test(urlCaratula)) {
+                    alert("Error: La carátula debe ser un enlace web que termine en un formato de imagen válido (.jpg, .png, .webp, etc.). Si no tienes uno, deja el campo en blanco.");
+                    return;
+                }
             }
 
             const data = {
@@ -296,6 +304,115 @@ const API = "/api";
                 return matchTxt && matchGen && matchPlat && matchEst;
             }));
         }
+
+        /**
+         * Función para cerrar un modal.
+         * Toma el ID del modal a cerrar como argumento y establece su estilo de visualización a 'none' para ocultarlo.
+         */
         function cerrarModal(id){ document.getElementById(id).style.display='none'; }
-        function abrirModal(){ document.getElementById('id-juego').value=""; document.getElementById('modal-form').style.display='flex'; }
-        function abrirFiltros(){ document.getElementById('modal-filtros').style.display='flex'; }
+
+        /**
+         * Función para abrir el modal de edición de juegos. 
+         * Deja los campos en blanco para crear un nuevo juego, o los llena con los datos del juego a editar si se llama desde la función `editar()`. Luego muestra el modal para que el usuario pueda ingresar o modificar la información del juego.
+         */
+        function abrirModal(){
+            document.getElementById('id-juego').value = "";
+
+            document.getElementById('titulo').value = "";
+            document.getElementById('anio').value = "";
+            document.getElementById('caratula').value = "";
+            document.getElementById('descripcion').value = "";
+
+
+            document.getElementById('puntuacion').value = "";
+            document.getElementById('estado').selectedIndex = 0;
+            document.getElementById('genero').selectedIndex = 0;
+            document.getElementById('formato').selectedIndex = 0;
+            document.getElementById('plataforma').selectedIndex = 0;
+
+            document.getElementById('modal-form').style.display = 'flex';
+        }
+
+        /**
+         * Función para abrir el modal de filtros.
+         * Limpia los campos de filtro para mostrar todos los juegos, aplica los filtros (que en este caso no filtrarán nada porque están vacíos) y luego muestra el modal de filtros para que el usuario pueda seleccionar nuevos criterios de filtrado.
+         */
+        function abrirFiltros() {
+            document.getElementById('filtro-txt').value = "";
+
+            document.getElementById('filtro-gen').value = "";
+            document.getElementById('filtro-plat').value = "";
+            document.getElementById('filtro-est').value = "";
+
+            aplicarFiltros();
+
+            document.getElementById('modal-filtros').style.display = 'flex';
+        }
+
+        /**
+         * Función para solicitar la recuperación de contraseña.
+         * Pide al usuario que ingrese su correo electrónico asociado a la cuenta, y si se proporciona un correo, envía una solicitud POST al endpoint de recuperación de contraseña del servidor.
+         * Si la solicitud es exitosa, se muestra un mensaje indicando que se ha enviado un enlace de recuperación. Si ocurre algún error, se muestra un mensaje adecuado al usuario.
+         */
+        async function solicitarRecuperacion() {
+            const email = prompt("Introduce el correo electrónico de tu cuenta:");
+            if (!email) return;
+
+            try {
+                const res = await fetch(API + '/auth/forgot-password', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: email })
+                });
+
+                if (res.ok) {
+                    alert("Si el correo está registrado, recibirás un enlace de recuperación en unos minutos.");
+                } else {
+                    alert("Hubo un error al procesar la solicitud.");
+                }
+            } catch(e) {
+                alert("Error de conexión con el servidor.");
+            }
+        }
+
+        /**
+         * Función que se ejecuta cuando se carga la página.
+         * Verifica si hay un token de recuperación de contraseña en la URL. Si existe, solicita al usuario que ingrese una nueva contraseña y envía una solicitud POST al servidor para restablecer la contraseña utilizando el token.
+         * Si el restablecimiento es exitoso, se muestra un mensaje de éxito y se redirige al usuario a la página de inicio. Si el token es inválido o ha caducado, se muestra un mensaje de error. Si no hay un token de recuperación, se verifica si hay un usuario guardado en localStorage para iniciar la sesión automáticamente.
+         */
+        window.onload = async () => {
+            const params = new URLSearchParams(window.location.search);
+            const resetToken = params.get('resetToken');
+
+            if (resetToken) {
+                const nuevaPassword = prompt("RECUPERACIÓN: Introduce tu nueva contraseña:");
+                if (nuevaPassword) {
+                    try {
+                        const res = await fetch(API + '/auth/reset-password', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': 'Bearer ' + resetToken
+                            },
+                            body: JSON.stringify({ password: nuevaPassword })
+                        });
+
+                        if (res.ok) {
+                            alert("¡Contraseña cambiada con éxito! Ya puedes iniciar sesión.");
+                            window.location.href = "/";
+                        } else {
+                            alert("El enlace ha caducado o es inválido. Vuelve a solicitar la recuperación.");
+                        }
+                    } catch(e) {
+                        alert("Error de conexión.");
+                    }
+                }
+                return;
+            }
+
+            const saved = localStorage.getItem('user_gm');
+            if(saved) {
+                usuario = JSON.parse(saved);
+                iniciarApp();
+            }
+        };

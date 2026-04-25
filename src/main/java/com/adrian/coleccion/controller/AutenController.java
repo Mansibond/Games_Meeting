@@ -4,6 +4,7 @@ import com.adrian.coleccion.model.Usuario;
 import com.adrian.coleccion.repository.UsuarioRepository;
 import com.adrian.coleccion.security.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,9 +22,12 @@ public class AutenController {
     private PasswordEncoder passwordEncoder;
 
     @Autowired
-    private JwtUtil jwtUtil; // Añade esta inyección arriba con las demás
+    private JwtUtil jwtUtil;
 
-    @PostMapping("/register")
+    @Autowired
+    private EmailService emailService;
+
+       @PostMapping("/register")
     public Usuario registrar(@RequestBody Usuario usuario) {
         if (usuarioRepository.findByEmail(usuario.getEmail()) != null) {
             throw new RuntimeException("El email ya existe");
@@ -49,5 +53,35 @@ public class AutenController {
         } else {
             return null;
         }
+    }
+
+    @PostMapping("/forgot-password")
+    public ResponseEntity<?> forgotPassword(@RequestBody Map<String, String> body) {
+        String email = body.get("email");
+        Usuario usuario = usuarioRepository.findByEmail(email);
+
+        if (usuario != null) {
+            String token = jwtUtil.generarToken(email);
+            emailService.enviarCorreoRecuperacion(email, token);
+        }
+
+        return ResponseEntity.ok(Map.of("mensaje", "Si el correo existe, hemos enviado un enlace de recuperación."));
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<?> resetPassword(@RequestHeader("Authorization") String tokenHeader, @RequestBody Map<String, String> body) {
+        String token = tokenHeader.replace("Bearer ", "");
+
+        String email = jwtUtil.extraerEmail(token);
+        Usuario usuario = usuarioRepository.findByEmail(email);
+
+        if (usuario != null && jwtUtil.validarToken(token)) {
+            // Encriptamos la nueva contraseña y la guardamos
+            usuario.setPassword(passwordEncoder.encode(body.get("password")));
+            usuarioRepository.save(usuario);
+            return ResponseEntity.ok(Map.of("mensaje", "Contraseña actualizada con éxito"));
+        }
+
+        return ResponseEntity.status(403).body(Map.of("error", "Token inválido o caducado"));
     }
 }
